@@ -7,16 +7,17 @@ class Route
     private $action;
     private $parameters;
     private $prefix = '';
+    protected const TRIM_CHARS = "/ \t\n\r\0\x0B";
 
     public function __construct($uri, $requestMethod)
     {
-        $this->uri = trim(strtok($uri, '?'), "/ \t\n\r\0\x0B");
+        $this->uri = trim(strtok($uri, '?'), static::TRIM_CHARS);
         $this->requestMethod = $requestMethod;
     }
 
     private function method(string $methodName, string $urlPattern, $action)
     {
-        $urlPattern = trim($this->prefix . $urlPattern, "/ \t\n\r\0\x0B");
+        $urlPattern = trim($this->prefix . $urlPattern, static::TRIM_CHARS);
 
         if ($this->requestMethod == $methodName) {
             $res = preg_replace('/\{(\w+?)\}/', '([\w\-]+)', $urlPattern);
@@ -35,7 +36,7 @@ class Route
 
     public function group(string $prefix, callable $closure)
     {
-        $prefix = $this->prefix . trim($prefix, "/ \t\n\r\0\x0B");
+        $prefix = $this->prefix . trim($prefix, static::TRIM_CHARS);
 
         if (strpos($this->uri, $prefix) === 0) {
             $this->prefix = $prefix . '/';
